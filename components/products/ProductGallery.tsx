@@ -35,34 +35,43 @@ export function ProductGallery({
   }
 
   const currentImage = allImages[selectedIndex] || allImages[0]
-  const isBackSide = currentImage === backImage && backImage !== frontImage
+  const isFrontSide = selectedIndex === 0 || (currentImage === frontImage && frontImage !== '')
+  const isBackSide = !isFrontSide && currentImage === backImage && backImage !== ''
+
+  const badgeText = isFrontSide
+    ? 'Front Side View'
+    : isBackSide
+    ? 'Back Side View (Ingredients & Specs)'
+    : `Product View ${selectedIndex + 1}`
 
   return (
     <div className="flex flex-col gap-4">
       {/* Main Image View Container */}
-      <div className="group relative h-80 overflow-hidden rounded-2xl bg-cream border border-border-gold/50 shadow-sm sm:h-96 transition-all duration-300">
+      <div className="group relative h-80 overflow-hidden rounded-2xl bg-cream border border-border-gold/50 shadow-sm sm:h-96 transition-all duration-300 flex items-center justify-center">
         <Image
           src={currentImage}
-          alt={`${productName} ${isBackSide ? 'Back Side View' : 'Front Side View'}`}
+          alt={`${productName} ${badgeText}`}
           fill
           priority
           sizes="(min-width: 1024px) 50vw, 100vw"
-          className="object-contain p-8 transition-transform duration-500 group-hover:scale-105"
+          className="object-contain p-4 sm:p-6 transition-transform duration-500 group-hover:scale-105"
         />
 
         {/* View Badge */}
         {allImages.length > 1 && (
-          <div className="absolute top-4 left-4">
+          <div className="absolute top-4 left-4 z-10">
             <span
               className={cn(
                 'rounded-full px-3 py-1 font-body text-[10px] font-bold uppercase tracking-widest shadow-xs transition-colors flex items-center gap-1.5',
                 isBackSide
                   ? 'bg-amber-800 text-amber-100'
-                  : 'bg-maroon-dark text-gold-light'
+                  : isFrontSide
+                  ? 'bg-maroon-dark text-gold-light'
+                  : 'bg-gold-dark text-white'
               )}
             >
               <Sparkles size={11} />
-              {isBackSide ? 'Back Side View (Ingredients & Specs)' : 'Front Side View'}
+              {badgeText}
             </span>
           </div>
         )}

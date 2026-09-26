@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { MessageCircle } from 'lucide-react'
 import { ProductPurchasePanel } from '@/components/products/ProductPurchasePanel'
 import { ProductDetailedSpecs } from '@/components/products/ProductDetailedSpecs'
+import { ProductGallery } from '@/components/products/ProductGallery'
 import { LinkButton } from '@/components/ui/Button'
 import { getProductBySlug, getProducts } from '@/hooks/useProducts'
 import { CATEGORY_LABELS } from '@/lib/constants'
@@ -84,17 +85,12 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
   return (
     <main className="bg-ivory px-6 py-16 sm:px-10">
       <div className="mx-auto grid max-w-5xl gap-12 lg:grid-cols-2">
-        <div className="relative h-80 overflow-hidden rounded-2xl bg-cream sm:h-96">
-          {product.image_url && (
-            <Image
-              src={product.image_url}
-              alt={product.name}
-              fill
-              sizes="(min-width: 1024px) 50vw, 100vw"
-              className="object-contain p-10"
-            />
-          )}
-        </div>
+        <ProductGallery
+          productName={product.name}
+          frontImage={product.image_url}
+          backImage={product.back_image_url}
+          images={product.images}
+        />
 
         <div>
           <p className="font-body text-xs font-bold uppercase tracking-wide text-gold">

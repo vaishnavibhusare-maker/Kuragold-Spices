@@ -14,6 +14,9 @@ export interface Product {
   tagline: string
   description: string
   image_url: string
+  back_image_url?: string
+  images?: string[]
+  raw_image_url?: string
   category: string
   is_active: boolean
   product_variants: ProductVariant[]

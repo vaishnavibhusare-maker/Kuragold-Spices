@@ -10,6 +10,7 @@ import { SizeSelector } from './SizeSelector'
 import { useWishlist } from '@/context/WishlistContext'
 import { buildSingleProductOrderMessage, buildComingSoonNotifyMessage } from '@/lib/whatsapp'
 import type { Product } from '@/types'
+import { cn } from '@/lib/utils'
 
 export function ProductCard({ product }: { product: Product }) {
   const isComingSoon = product.status === 'coming_soon'
@@ -73,7 +74,19 @@ export function ProductCard({ product }: { product: Product }) {
             alt={product.name}
             fill
             sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
-            className="object-contain p-6 transition-transform duration-300 group-"
+            className={cn(
+              'object-contain p-6 transition-all duration-300',
+              product.back_image_url && 'group-hover:opacity-0'
+            )}
+          />
+        )}
+        {product.back_image_url && (
+          <Image
+            src={product.back_image_url}
+            alt={`${product.name} Backside`}
+            fill
+            sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+            className="object-contain p-6 opacity-0 transition-all duration-300 group-hover:opacity-100"
           />
         )}
       </Link>

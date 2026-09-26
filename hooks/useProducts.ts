@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/public'
+import { parseProductImages } from '@/lib/productImages'
 import type { Blog, Product } from '@/types'
 
 export async function getProducts(): Promise<Product[]> {
@@ -11,12 +12,19 @@ export async function getProducts(): Promise<Product[]> {
 
   if (error || !data) return []
 
-  return data.map((product) => ({
-    ...product,
-    product_variants: [...(product.product_variants || [])].sort(
-      (a, b) => a.sort_order - b.sort_order
-    ),
-  })) as Product[]
+  return data.map((product) => {
+    const parsed = parseProductImages(product.image_url)
+    return {
+      ...product,
+      image_url: parsed.front,
+      back_image_url: parsed.back,
+      images: parsed.all,
+      raw_image_url: product.image_url,
+      product_variants: [...(product.product_variants || [])].sort(
+        (a, b) => a.sort_order - b.sort_order
+      ),
+    }
+  }) as Product[]
 }
 
 export async function getProductBySlug(slug: string): Promise<Product | null> {
@@ -29,8 +37,14 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
 
   if (error || !data) return null
 
+  const parsed = parseProductImages(data.image_url)
+
   return {
     ...data,
+    image_url: parsed.front,
+    back_image_url: parsed.back,
+    images: parsed.all,
+    raw_image_url: data.image_url,
     product_variants: [...(data.product_variants || [])].sort((a, b) => a.sort_order - b.sort_order),
   } as Product
 }
@@ -45,12 +59,19 @@ export async function getBestSellers(): Promise<Product[]> {
 
   if (error || !data) return []
 
-  return data.map((product) => ({
-    ...product,
-    product_variants: [...(product.product_variants || [])].sort(
-      (a, b) => a.sort_order - b.sort_order
-    ),
-  })) as Product[]
+  return data.map((product) => {
+    const parsed = parseProductImages(product.image_url)
+    return {
+      ...product,
+      image_url: parsed.front,
+      back_image_url: parsed.back,
+      images: parsed.all,
+      raw_image_url: product.image_url,
+      product_variants: [...(product.product_variants || [])].sort(
+        (a, b) => a.sort_order - b.sort_order
+      ),
+    }
+  }) as Product[]
 }
 
 export async function getPublishedBlogs(): Promise<Blog[]> {

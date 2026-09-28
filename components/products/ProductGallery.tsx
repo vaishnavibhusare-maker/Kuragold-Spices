@@ -47,19 +47,24 @@ export function ProductGallery({
   return (
     <div className="flex flex-col gap-4">
       {/* Main Image View Container */}
-      <div className="group relative h-80 overflow-hidden rounded-2xl bg-cream border border-border-gold/50 shadow-sm sm:h-96 transition-all duration-300 flex items-center justify-center">
-        <Image
-          src={currentImage}
-          alt={`${productName} ${badgeText}`}
-          fill
-          priority
-          sizes="(min-width: 1024px) 50vw, 100vw"
-          className="object-contain p-4 sm:p-6 transition-transform duration-500 group-hover:scale-105"
-        />
+      <div
+        onClick={() => setIsZoomOpen(true)}
+        className="group relative h-80 w-full overflow-hidden rounded-2xl bg-cream border border-border-gold/50 shadow-sm sm:h-96 transition-all duration-300 cursor-pointer p-3 sm:p-5"
+      >
+        <div className="relative h-full w-full flex items-center justify-center">
+          <Image
+            src={currentImage}
+            alt={`${productName} ${badgeText}`}
+            fill
+            priority
+            sizes="(min-width: 1024px) 50vw, 100vw"
+            className="object-contain transition-transform duration-500 group-hover:scale-105"
+          />
+        </div>
 
         {/* View Badge */}
         {allImages.length > 1 && (
-          <div className="absolute top-4 left-4 z-10">
+          <div className="absolute top-4 left-4 z-10 pointer-events-none">
             <span
               className={cn(
                 'rounded-full px-3 py-1 font-body text-[10px] font-bold uppercase tracking-widest shadow-xs transition-colors flex items-center gap-1.5',
@@ -79,8 +84,11 @@ export function ProductGallery({
         {/* Zoom Trigger Button */}
         <button
           type="button"
-          onClick={() => setIsZoomOpen(true)}
-          className="absolute bottom-4 right-4 rounded-full bg-white/90 p-2 text-maroon shadow-md backdrop-blur-xs transition-colors hover:bg-maroon hover:text-white"
+          onClick={(e) => {
+            e.stopPropagation()
+            setIsZoomOpen(true)
+          }}
+          className="absolute bottom-4 right-4 z-10 rounded-full bg-white/90 p-2 text-maroon shadow-md backdrop-blur-xs transition-colors hover:bg-maroon hover:text-white"
           title="Click to zoom image"
         >
           <Maximize2 size={16} />
@@ -144,7 +152,7 @@ export function ProductGallery({
             </div>
 
             <p className="mt-4 font-heading text-sm font-bold text-ivory flex items-center gap-2">
-              {productName} — {isBackSide ? 'Back Side View' : 'Front Side View'}
+              {productName} — {badgeText}
             </p>
           </div>
         </div>

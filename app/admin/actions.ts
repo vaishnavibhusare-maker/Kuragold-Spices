@@ -25,6 +25,41 @@ export async function createProduct() {
   redirect(`/admin/products/${data.id}`)
 }
 
+export async function uploadProductImageAction(formData: FormData): Promise<{ url?: string; error?: string }> {
+  try {
+    const file = formData.get('file') as File | null
+    if (!file) return { error: 'No file provided' }
+
+    const supabase = createClient()
+    const fileExt = file.name.split('.').pop() || 'webp'
+    const fileName = `upload-${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${fileExt}`
+    const filePath = `product-images/${fileName}`
+
+    const arrayBuffer = await file.arrayBuffer()
+    const buffer = Buffer.from(arrayBuffer)
+
+    const { error } = await supabase.storage
+      .from('product-images')
+      .upload(filePath, buffer, { contentType: file.type || 'image/jpeg', cacheControl: '3600', upsert: true })
+
+    if (error) {
+      console.error('Server storage upload error:', error.message)
+      return { error: error.message }
+    }
+
+    const { data: publicUrlData } = supabase.storage.from('product-images').getPublicUrl(filePath)
+    if (publicUrlData?.publicUrl) {
+      return { url: publicUrlData.publicUrl }
+    }
+
+    return { error: 'Failed to retrieve public URL' }
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : 'Server upload error'
+    console.error('Upload action exception:', message)
+    return { error: message }
+  }
+}
+
 export async function updateProduct(id: string, oldSlug: string, formData: FormData) {
   const supabase = createClient()
   const newSlug = String(formData.get('slug') ?? oldSlug)

@@ -17,6 +17,7 @@ import {
   Sparkles,
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { uploadProductImageAction } from '@/app/admin/actions'
 import { parseProductImages, formatProductImages } from '@/lib/productImages'
 import { cn } from '@/lib/utils'
 
@@ -70,11 +71,20 @@ export function ImageInputPicker({
   const fileInputFrontRef = useRef<HTMLInputElement>(null)
   const fileInputBackRef = useRef<HTMLInputElement>(null)
 
-  // Upload a single file to Supabase or DataURL
+  // Upload a single file via Server Action or compressed DataURL fallback
   const uploadSingleFile = async (file: File): Promise<string> => {
     try {
+      // 1. Primary: Upload via Server Action (bypasses client RLS)
+      const formData = new FormData()
+      formData.append('file', file)
+      const res = await uploadProductImageAction(formData)
+      if (res?.url) {
+        return res.url
+      }
+
+      // 2. Secondary: Client Supabase upload
       const supabase = createClient()
-      const fileExt = file.name.split('.').pop()
+      const fileExt = file.name.split('.').pop() || 'webp'
       const fileName = `upload-${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${fileExt}`
       const filePath = `product-images/${fileName}`
 
@@ -89,10 +99,38 @@ export function ImageInputPicker({
         }
       }
 
-      // Fallback Data URL
+      // 3. Fallback: Compressed canvas Data URL (lightweight, under 60KB)
       return new Promise<string>((resolve) => {
+        const img = document.createElement('img')
         const reader = new FileReader()
-        reader.onloadend = () => resolve(typeof reader.result === 'string' ? reader.result : '')
+        reader.onloadend = () => {
+          if (typeof reader.result !== 'string') return resolve('')
+          img.src = reader.result
+          img.onload = () => {
+            const canvas = document.createElement('canvas')
+            const maxDim = 800
+            let width = img.width
+            let height = img.height
+
+            if (width > maxDim || height > maxDim) {
+              if (width > height) {
+                height = Math.round((height * maxDim) / width)
+                width = maxDim
+              } else {
+                width = Math.round((width * maxDim) / height)
+                height = maxDim
+              }
+            }
+
+            canvas.width = width
+            canvas.height = height
+            const ctx = canvas.getContext('2d')
+            ctx?.drawImage(img, 0, 0, width, height)
+            const compressed = canvas.toDataURL('image/webp', 0.8)
+            resolve(compressed)
+          }
+          img.onerror = () => resolve(reader.result as string)
+        }
         reader.readAsDataURL(file)
       })
     } catch {

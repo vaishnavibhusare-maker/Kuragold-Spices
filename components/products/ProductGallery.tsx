@@ -23,8 +23,6 @@ export function ProductGallery({
   const [selectedIndex, setSelectedIndex] = useState<number>(0)
   const [isZoomOpen, setIsZoomOpen] = useState<boolean>(false)
 
-  const [failedImages, setFailedImages] = useState<Record<string, boolean>>({})
-
   if (allImages.length === 0) {
     return (
       <div className="relative flex h-80 items-center justify-center rounded-2xl bg-cream sm:h-96 border border-border-gold/40">
@@ -36,8 +34,7 @@ export function ProductGallery({
     )
   }
 
-  const rawImage = allImages[selectedIndex] || allImages[0]
-  const currentImage = failedImages[rawImage] ? (frontImage || allImages[0]) : rawImage
+  const currentImage = allImages[selectedIndex] || allImages[0]
   const isFrontSide = selectedIndex === 0 || (currentImage === frontImage && frontImage !== '')
   const isBackSide = !isFrontSide && currentImage === backImage && backImage !== ''
 
@@ -58,9 +55,6 @@ export function ProductGallery({
           priority
           sizes="(min-width: 1024px) 50vw, 100vw"
           className="object-contain p-4 sm:p-6 transition-transform duration-500 group-hover:scale-105"
-          onError={() => {
-            setFailedImages((prev) => ({ ...prev, [rawImage]: true }))
-          }}
         />
 
         {/* View Badge */}
@@ -113,13 +107,10 @@ export function ProductGallery({
               >
                 <div className="relative h-16 w-16 overflow-hidden rounded-lg bg-cream/60">
                   <Image
-                    src={failedImages[imgUrl] ? (frontImage || allImages[0]) : imgUrl}
+                    src={imgUrl}
                     alt={`${productName} thumbnail ${idx + 1}`}
                     fill
                     className="object-contain p-1"
-                    onError={() => {
-                      setFailedImages((prev) => ({ ...prev, [imgUrl]: true }))
-                    }}
                   />
                 </div>
                 <span className="mt-1 font-body text-[9px] font-bold uppercase tracking-wider text-maroon">

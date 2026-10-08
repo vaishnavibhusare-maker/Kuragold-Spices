@@ -19,19 +19,49 @@ const FAQS = [
   },
 ]
 
-export function FAQ() {
+export function FAQ({ contentMap = {} }: { contentMap?: Record<string, string> }) {
+  const sectionLabel = contentMap.home_faq_section_label || 'Good to Know'
+  const title = contentMap.home_faq_title || 'Frequently Asked Questions'
+
+  const faqs = [
+    {
+      q: contentMap.home_faq1_q || 'How do I place an order?',
+      a:
+        contentMap.home_faq1_a ||
+        "Add the products and pack sizes you'd like to your cart, then tap Checkout. Our team confirms every order personally on WhatsApp before it's packed.",
+    },
+    {
+      q: contentMap.home_faq2_q || 'What pack sizes are available?',
+      a:
+        contentMap.home_faq2_a ||
+        'Sizes vary by product, from 50g up to 500g. Each product page shows exactly which sizes are available.',
+    },
+    {
+      q: contentMap.home_faq3_q || 'How do I pay?',
+      a:
+        contentMap.home_faq3_a ||
+        'Payment and delivery details are shared directly once your order is confirmed over WhatsApp.',
+    },
+    {
+      q: contentMap.home_faq4_q || 'Can I ask a question before ordering?',
+      a:
+        contentMap.home_faq4_a ||
+        'Of course — tap the WhatsApp button anywhere on the site and message us directly.',
+    },
+  ]
+
   return (
     <section className="bg-ivory px-6 py-8 sm:px-10 lg:py-10">
       <div className="mx-auto max-w-3xl">
         <div className="mb-5 flex flex-col items-center text-center">
-          <SectionLabel className="justify-center">Good to Know</SectionLabel>
+          <SectionLabel className="justify-center">{sectionLabel}</SectionLabel>
           <h2 className="font-heading text-2xl font-bold text-maroon sm:text-3xl lg:text-4xl">
-            Frequently Asked Questions
+            {title}
           </h2>
         </div>
 
         <div className="flex flex-col gap-3">
-          {FAQS.map((faq) => (
+          {faqs.map((faq) => (
             <details
               key={faq.q}
               className="group rounded-xl border border-border-gold/60 bg-white px-5 py-4 open:shadow-sm"

@@ -12,12 +12,32 @@ const HERO_BADGES = [
 interface HeroProps {
   products?: Product[]
   claims: SiteClaim[]
+  contentMap?: Record<string, string>
 }
 
-export function Hero({ claims }: HeroProps) {
+function renderHeadlineText(text: string) {
+  if (text.includes('Gold')) {
+    const parts = text.split('Gold')
+    return (
+      <>
+        {parts[0]}
+        <span className="font-accent italic text-gold">Gold</span>
+        {parts.slice(1).join('Gold')}
+      </>
+    )
+  }
+  return text
+}
+
+export function Hero({ claims, contentMap = {} }: HeroProps) {
   const natural = claims.find((c) => c.key === 'natural')
   const noColour = claims.find((c) => c.key === 'no_colour')
   const showBadge = Boolean(natural && noColour)
+
+  const headlineText = contentMap.home_hero_headline || 'The Gold Standard of Indian Spices.'
+  const subheadlineText =
+    contentMap.home_hero_subheadline ||
+    'Pure, hand-ground spices from Hyderabad — where heritage tradition meets uncompromising purity. Sourced directly from premier Indian farms, cold-processed to retain natural essential oils, and packed with zero added artificial colors or preservatives for authentic everyday cooking.'
 
   return (
     <section className="relative overflow-hidden bg-[linear-gradient(135deg,#5C0E0E_0%,#7A1515_50%,#3D0A0A_100%)] px-6 py-10 sm:px-10 sm:py-16 lg:py-0">
@@ -31,11 +51,11 @@ export function Hero({ claims }: HeroProps) {
           )}
 
           <h1 className="font-heading text-4xl font-black leading-tight text-ivory sm:text-5xl lg:text-6xl">
-            The <span className="font-accent italic text-gold">Gold</span> Standard of Indian Spices.
+            {renderHeadlineText(headlineText)}
           </h1>
 
           <p className="mt-5 max-w-xl font-body text-sm sm:text-base leading-relaxed text-white/95 font-normal">
-            Pure, hand-ground spices from Hyderabad — where heritage tradition meets uncompromising purity. Sourced directly from premier Indian farms, cold-processed to retain natural essential oils, and packed with zero added artificial colors or preservatives for authentic everyday cooking.
+            {subheadlineText}
           </p>
 
           {/* Key Feature Badges */}

@@ -40,20 +40,80 @@ const CARDS = [
   },
 ] as const
 
-export function QualityPreview({ claims: _claims }: { claims?: SiteClaim[] } = {}) {
+export function QualityPreview({
+  claims: _claims,
+  contentMap = {},
+}: {
+  claims?: SiteClaim[]
+  contentMap?: Record<string, string>
+} = {}) {
+  const sectionLabel = contentMap.home_quality_section_label || 'Why Choose Us'
+  const title = contentMap.home_quality_title || 'Purity is Our Promise'
+  const subtitle =
+    contentMap.home_quality_subtitle ||
+    'Every pouch of Kura Gold Spices is backed by strict standards of farm sourcing, unadulterated purity, and hygienic care.'
+
+  const cards = [
+    {
+      key: 'card1',
+      icon: '🌿',
+      badge: 'Zero Adulteration',
+      title: contentMap.home_quality_card1_title || '100% Natural Ingredients',
+      description:
+        contentMap.home_quality_card1_desc ||
+        'Pure spices ground without synthetic dyes, MSG, artificial colors, or starch fillers—preserving full essential oils and authentic flavor.',
+    },
+    {
+      key: 'card2',
+      icon: '🏅',
+      badge: 'Lic. 23626030003544',
+      title: contentMap.home_quality_card2_title || 'FSSAI Safety Certified',
+      description:
+        contentMap.home_quality_card2_desc ||
+        'Processed and packaged in hygienic facilities under strict Food Safety & Standards Authority of India (FSSAI) guidelines.',
+    },
+    {
+      key: 'card3',
+      icon: '🌾',
+      badge: 'Cold-Ground Process',
+      title: contentMap.home_quality_card3_title || 'Farm-Direct Sourcing',
+      description:
+        contentMap.home_quality_card3_desc ||
+        'Sourced directly from premier spice-growing regions across India and gently processed to retain maximum pungency and natural aroma.',
+    },
+    {
+      key: 'card4',
+      icon: '📦',
+      badge: '50g to 500g Pouches',
+      title: contentMap.home_quality_card4_title || 'Multiple Pack Sizes',
+      description:
+        contentMap.home_quality_card4_desc ||
+        'Available in convenient moisture-lock zipper pouches tailored for daily home cooking, bulk family use, and gifting.',
+    },
+    {
+      key: 'card5',
+      icon: '💬',
+      badge: 'Instant Assistance',
+      title: contentMap.home_quality_card5_title || '24/7 Dedicated Support',
+      description:
+        contentMap.home_quality_card5_desc ||
+        'Reach our support team directly via WhatsApp or phone anytime for order tracking, bulk queries, and custom advice.',
+    },
+  ]
+
   return (
     <section className="bg-[#FAF6F0] px-6 py-8 sm:px-10 lg:py-10">
       <div className="mx-auto max-w-7xl text-center">
-        <SectionLabel className="justify-center">Why Choose Us</SectionLabel>
+        <SectionLabel className="justify-center">{sectionLabel}</SectionLabel>
         <h2 className="font-heading text-2xl font-bold text-maroon sm:text-3xl lg:text-4xl">
-          Purity is Our Promise
+          {title}
         </h2>
         <p className="mx-auto mt-1.5 max-w-xl text-xs sm:text-sm font-medium text-[#3A2414] leading-relaxed mb-6">
-          Every pouch of Kura Gold Spices is backed by strict standards of farm sourcing, unadulterated purity, and hygienic care.
+          {subtitle}
         </p>
 
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 text-left">
-          {CARDS.map((card) => (
+          {cards.map((card) => (
             <div
               key={card.key}
               className="flex flex-col justify-between rounded-2xl border border-border-gold/60 bg-white p-5 shadow-sm transition-all duration-300 hover:border-gold hover:shadow-md"

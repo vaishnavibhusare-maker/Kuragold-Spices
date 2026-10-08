@@ -33,18 +33,24 @@ const FEATURED_HOME_RECIPES = [
   },
 ]
 
-export function RecipesComingSoon() {
+export function RecipesComingSoon({ contentMap = {} }: { contentMap?: Record<string, string> }) {
+  const sectionLabel = contentMap.home_recipes_section_label || 'OUR COOKING RECIPES'
+  const title = contentMap.home_recipes_title || 'Where Every Spice Tells a Story'
+  const subtitle =
+    contentMap.home_recipes_subtitle ||
+    'From the aroma of freshly ground spices to the warmth of a family meal, discover chef-crafted recipes celebrating authentic Indian cooking with 100% pure Kura Gold Spices.'
+
   return (
     <section className="bg-cream/40 border-y border-border-gold/40 px-6 py-14 sm:px-10 lg:py-20">
       <div className="mx-auto max-w-7xl space-y-10">
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto space-y-3">
-          <SectionLabel className="justify-center">OUR COOKING RECIPES</SectionLabel>
+          <SectionLabel className="justify-center">{sectionLabel}</SectionLabel>
           <h2 className="font-heading text-3xl sm:text-4xl font-bold text-maroon">
-            Where Every Spice Tells a Story
+            {title}
           </h2>
           <p className="font-body text-xs sm:text-sm text-muted leading-relaxed max-w-2xl mx-auto">
-            From the aroma of freshly ground spices to the warmth of a family meal, discover chef-crafted recipes celebrating authentic Indian cooking with 100% pure Kura Gold Spices.
+            {subtitle}
           </p>
         </div>
 

@@ -29,14 +29,17 @@ const CATEGORIES = [
   },
 ]
 
-export function ShopByCategory() {
+export function ShopByCategory({ contentMap = {} }: { contentMap?: Record<string, string> }) {
+  const sectionLabel = contentMap.home_cat_section_label || 'Shop By Category'
+  const title = contentMap.home_cat_title || 'Discover Spices for Every Kitchen'
+
   return (
     <section className="bg-ivory px-6 py-12 sm:px-10 lg:py-16">
       <div className="mx-auto max-w-7xl">
         <div className="mb-10 text-center">
-          <SectionLabel className="justify-center">Shop By Category</SectionLabel>
+          <SectionLabel className="justify-center">{sectionLabel}</SectionLabel>
           <h2 className="font-heading text-3xl font-bold text-maroon sm:text-4xl">
-            Discover Spices for Every Kitchen
+            {title}
           </h2>
         </div>
 

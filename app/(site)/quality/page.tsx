@@ -19,6 +19,7 @@ import { SectionLabel } from '@/components/ui/SectionLabel'
 import { getClaims } from '@/hooks/useClaims'
 import { FSSAI_LIC, SITE_NAME } from '@/lib/constants'
 import { buildGeneralInquiryMessage } from '@/lib/whatsapp'
+import { getSiteContentMap } from '@/lib/siteContent'
 
 export const metadata: Metadata = {
   title: 'Quality',
@@ -27,118 +28,60 @@ export const metadata: Metadata = {
 
 export const dynamic = 'force-dynamic'
 
-// Process step definitions (Selection to Kitchen)
-const SELECTION_STEPS = [
-  {
-    step: '01',
-    icon: Leaf,
-    title: 'Carefully Selected',
-    description: 'Products selected with attention to quality and suitability for everyday cooking.',
-    key: 'farm_sourced',
-  },
-  {
-    step: '02',
-    icon: ShieldCheck,
-    title: 'Quality Focused',
-    description: 'Every product is handled with care to maintain consistency and flavour.',
-    key: 'natural',
-  },
-  {
-    step: '03',
-    icon: Package,
-    title: 'Packed with Care',
-    description: 'Products are packed in convenient formats designed for everyday use.',
-    key: 'pack_sizes',
-  },
-  {
-    step: '04',
-    icon: Truck,
-    title: 'Delivered to You',
-    description: 'Choose your preferred pack size and connect with us directly through WhatsApp.',
-    key: 'wa_support',
-  },
-]
-
-// Our Promises
-const PROMISES = [
-  {
-    icon: Gem,
-    title: 'Consistent Quality',
-    description: 'We aim to deliver a dependable spice experience across our product range.',
-    key: 'natural',
-  },
-  {
-    icon: UtensilsCrossed,
-    title: 'Authentic Flavour',
-    description: 'Our products are made for the flavours that belong in everyday Indian kitchens.',
-    key: 'farm_sourced',
-  },
-  {
-    icon: Users,
-    title: 'Customer First',
-    description: 'From choosing a product to placing an order, we keep the experience simple and accessible.',
-    key: 'wa_support',
-  },
-]
-
-// Quality Journey Steps
-const JOURNEY_STEPS = [
-  {
-    code: 'SELECT',
-    icon: Search,
-    description: 'Products chosen for everyday Indian cooking.',
-  },
-  {
-    code: 'CHECK',
-    icon: ShieldCheck,
-    description: 'Quality-focused handling before products reach customers.',
-  },
-  {
-    code: 'PACK',
-    icon: Package,
-    description: 'Convenient pack sizes prepared for everyday use.',
-  },
-  {
-    code: 'CONNECT',
-    icon: MessageCircle,
-    description: 'Easy ordering and customer support through WhatsApp.',
-  },
-]
-
-// Certifications
-const CERTS = [
-  {
-    key: 'fssai',
-    title: 'FSSAI CERTIFIED',
-    subtitle: `LIC. ${FSSAI_LIC}`,
-    icon: '/badges/fssai.webp',
-    width: 72,
-    height: 72,
-  },
-  {
-    key: 'telangana',
-    title: 'GOVT. OF TELANGANA',
-    subtitle: 'TELANGANA, INDIA',
-    icon: '/badges/telangana.webp',
-    width: 72,
-    height: 72,
-  },
-  {
-    key: 'make_india',
-    title: 'MAKE IN INDIA',
-    subtitle: 'PROUDLY INDIAN',
-    icon: '/badges/make_in_india.webp',
-    width: 140,
-    height: 72,
-  },
-]
-
 export default async function QualityPage() {
-  const claims = await getClaims()
+  const [claims, contentMap] = await Promise.all([
+    getClaims(),
+    getSiteContentMap(),
+  ])
   const isConfirmed = (key: string) => claims.some((c) => c.key === key && c.is_confirmed)
 
-  const activeCerts = CERTS.filter((c) => isConfirmed(c.key))
+  const certs = [
+    {
+      key: 'fssai',
+      title: contentMap.quality_cert1_title || 'FSSAI CERTIFIED',
+      subtitle: contentMap.quality_cert1_sub || `LIC. ${contentMap.quality_fssai_no || FSSAI_LIC}`,
+      icon: '/badges/fssai.webp',
+      width: 72,
+      height: 72,
+    },
+    {
+      key: 'telangana',
+      title: contentMap.quality_cert2_title || 'GOVT. OF TELANGANA',
+      subtitle: contentMap.quality_cert2_sub || 'TELANGANA, INDIA',
+      icon: '/badges/telangana.webp',
+      width: 72,
+      height: 72,
+    },
+    {
+      key: 'make_india',
+      title: contentMap.quality_cert3_title || 'MAKE IN INDIA',
+      subtitle: contentMap.quality_cert3_sub || 'PROUDLY INDIAN',
+      icon: '/badges/make_in_india.webp',
+      width: 140,
+      height: 72,
+    },
+  ]
+
+  const activeCerts = certs.filter((c) => isConfirmed(c.key))
   const whatsappUrl = buildGeneralInquiryMessage()
+
+  const promises = [
+    {
+      icon: Gem,
+      title: contentMap.quality_promise1_title || 'Consistent Quality',
+      description: contentMap.quality_promise1_desc || 'We aim to deliver a dependable spice experience across our product range.',
+    },
+    {
+      icon: UtensilsCrossed,
+      title: contentMap.quality_promise2_title || 'Authentic Flavour',
+      description: contentMap.quality_promise2_desc || 'Our products are made for the flavours that belong in everyday Indian kitchens.',
+    },
+    {
+      icon: Users,
+      title: contentMap.quality_promise3_title || 'Customer First',
+      description: contentMap.quality_promise3_desc || 'From choosing a product to placing an order, we keep the experience simple and accessible.',
+    },
+  ]
 
   return (
     <main className="bg-cream/20">
@@ -149,11 +92,11 @@ export default async function QualityPage() {
             {/* Left Content */}
             <div className="lg:col-span-7">
               <span className="font-body text-[11px] font-bold uppercase tracking-widest text-gold">
-                OUR QUALITY PROMISE
+                {contentMap.quality_hero_label || 'OUR QUALITY PROMISE'}
               </span>
               <h1 className="mt-1.5 font-heading text-2xl font-bold text-white sm:text-3xl lg:text-4xl leading-tight">
-                Quality You Can Taste.<br />
-                <span className="text-gold-light">Care You Can Trust.</span>
+                {contentMap.quality_hero_title1 || 'Quality You Can Taste.'}<br />
+                <span className="text-gold-light">{contentMap.quality_hero_title2 || 'Care You Can Trust.'}</span>
               </h1>
 
               {/* Leaf Ornament Divider */}
@@ -164,7 +107,7 @@ export default async function QualityPage() {
               </div>
 
               <p className="max-w-xl font-body text-xs text-cream/90 sm:text-sm leading-relaxed">
-                Every Kura Gold product is created with a simple purpose — to bring dependable quality and authentic flavour to everyday cooking.
+                {contentMap.quality_hero_subtitle || 'Every Kura Gold product is created with a simple purpose — to bring dependable quality and authentic flavour to everyday cooking.'}
               </p>
             </div>
             {/* Right Image Container */}
@@ -207,10 +150,10 @@ export default async function QualityPage() {
                   <Leaf className="h-3.5 w-3.5 text-[#E5B842] fill-[#E5B842]/30" />
                 </div>
                 <p className="mt-1 font-heading text-xs sm:text-sm font-bold text-[#E5B842] tracking-wide">
-                  Rooted in Indian kitchens,
+                  {contentMap.quality_badge_title || 'Rooted in Indian kitchens,'}
                 </p>
                 <p className="mt-0.5 font-heading text-[11px] sm:text-xs font-bold text-[#FFF8E7]">
-                  crafted for modern homes.
+                  {contentMap.quality_badge_subtitle || 'crafted for modern homes.'}
                 </p>
               </div>
             </div>
@@ -222,16 +165,16 @@ export default async function QualityPage() {
                 <div className="mb-1.5 flex items-center justify-center gap-3">
                   <span className="h-px w-8 bg-gold" />
                   <span className="font-body text-xs font-bold uppercase tracking-[0.2em] text-gold">
-                    WHY CHOOSE KURA GOLD
+                    {contentMap.quality_why_label || 'WHY CHOOSE KURA GOLD'}
                   </span>
                   <span className="h-px w-8 bg-gold" />
                 </div>
 
                 <h2 className="font-heading text-2xl font-bold text-maroon sm:text-3xl lg:text-4xl">
-                  Purity is Our Promise
+                  {contentMap.quality_why_title || 'Purity is Our Promise'}
                 </h2>
                 <p className="mx-auto mt-1.5 max-w-lg text-xs text-muted leading-relaxed sm:text-sm">
-                  From carefully selected raw spices to hygienic processing and safe packaging – we ensure quality you can see, smell and trust.
+                  {contentMap.quality_why_subtitle || 'From carefully selected raw spices to hygienic processing and safe packaging – we ensure quality you can see, smell and trust.'}
                 </p>
               </div>
 
@@ -244,10 +187,10 @@ export default async function QualityPage() {
                       <Award className="h-5 w-5 text-gold" />
                     </div>
                     <h3 className="font-heading text-sm font-bold text-maroon sm:text-base">
-                      FSSAI Certified
+                      {contentMap.quality_card1_title || 'FSSAI Certified'}
                     </h3>
                     <p className="mt-1 text-[11px] text-muted leading-relaxed">
-                      Manufactured and packed under a valid FSSAI license ensuring safe and hygienic products.
+                      {contentMap.quality_card1_desc || 'Manufactured and packed under a valid FSSAI license ensuring safe and hygienic products.'}
                     </p>
                   </div>
                   {/* Illustration Image 1 */}
@@ -269,10 +212,10 @@ export default async function QualityPage() {
                       <MapPin className="h-5 w-5 text-gold" />
                     </div>
                     <h3 className="font-heading text-sm font-bold text-maroon sm:text-base">
-                      Made in India
+                      {contentMap.quality_card2_title || 'Made in India'}
                     </h3>
                     <p className="mt-1 text-[11px] text-muted leading-relaxed">
-                      Proudly grown, sourced and packed in India, supporting our farmers and local communities.
+                      {contentMap.quality_card2_desc || 'Proudly grown, sourced and packed in India, supporting our farmers and local communities.'}
                     </p>
                   </div>
                   {/* Illustration Image 2 */}
@@ -294,10 +237,10 @@ export default async function QualityPage() {
                       <Package className="h-5 w-5 text-gold" />
                     </div>
                     <h3 className="font-heading text-sm font-bold text-maroon sm:text-base">
-                      Multiple Pack Sizes
+                      {contentMap.quality_card3_title || 'Multiple Pack Sizes'}
                     </h3>
                     <p className="mt-1 text-[11px] text-muted leading-relaxed">
-                      From 50g to 500g, pick the pack that fits your kitchen and your needs.
+                      {contentMap.quality_card3_desc || 'From 50g to 500g, pick the pack that fits your kitchen and your needs.'}
                     </p>
                   </div>
                   {/* Illustration Image 3 */}
@@ -319,10 +262,10 @@ export default async function QualityPage() {
                       <Headphones className="h-5 w-5 text-gold" />
                     </div>
                     <h3 className="font-heading text-sm font-bold text-maroon sm:text-base">
-                      24/7 Dedicated Support
+                      {contentMap.quality_card4_title || '24/7 Dedicated Support'}
                     </h3>
                     <p className="mt-1 text-[11px] text-muted leading-relaxed">
-                      Reach our team directly on WhatsApp, any time, any day.
+                      {contentMap.quality_card4_desc || 'Reach out to our team directly on WhatsApp, any time, any day.'}
                     </p>
                   </div>
                   {/* Illustration Image 4 */}
@@ -351,21 +294,20 @@ export default async function QualityPage() {
               <div className="mb-2 flex items-center gap-3">
                 <span className="h-px w-8 bg-gold" />
                 <span className="font-body text-xs font-bold uppercase tracking-[0.2em] text-gold">
-                  OUR JOURNEY
+                  {contentMap.quality_journey_label || 'OUR JOURNEY'}
                 </span>
               </div>
 
               <h2 className="font-heading text-3xl font-bold leading-tight text-maroon sm:text-4xl">
-                A Passion for Flavour.<br />
-                A Promise of Quality.
+                {contentMap.quality_journey_title || 'A Passion for Flavour.<br />A Promise of Quality.'}
               </h2>
 
               <div className="mt-4 space-y-3 text-xs sm:text-sm text-muted leading-relaxed">
                 <p>
-                  Kura Gold Spices was created with a simple belief – great food begins with great spices.
+                  {contentMap.quality_journey_p1 || 'Kura Gold Spices was created with a simple belief – great food begins with great spices.'}
                 </p>
                 <p>
-                  We work with trusted suppliers, follow careful quality checks and pack every product with care to bring the best flavours to your home.
+                  {contentMap.quality_journey_p2 || 'We work with trusted suppliers, follow careful quality checks and pack every product with care to bring the best flavours to your home.'}
                 </p>
               </div>
             </div>
@@ -383,10 +325,10 @@ export default async function QualityPage() {
                       <Leaf className="h-5 w-5 text-gold" />
                     </div>
                     <h3 className="mt-3 font-heading text-xs font-bold uppercase tracking-wider text-maroon">
-                      Carefully Sourced
+                      {contentMap.quality_step1_title || 'Carefully Sourced'}
                     </h3>
                     <p className="mt-1.5 max-w-[180px] text-[11px] text-muted leading-relaxed">
-                      We choose the best quality raw spices from trusted farmers and markets.
+                      {contentMap.quality_step1_desc || 'We choose the best quality raw spices from trusted farmers and markets.'}
                     </p>
                   </div>
 
@@ -396,10 +338,10 @@ export default async function QualityPage() {
                       <UtensilsCrossed className="h-5 w-5 text-gold" />
                     </div>
                     <h3 className="mt-3 font-heading text-xs font-bold uppercase tracking-wider text-maroon">
-                      Cleaned & Processed
+                      {contentMap.quality_step2_title || 'Cleaned & Processed'}
                     </h3>
                     <p className="mt-1.5 max-w-[180px] text-[11px] text-muted leading-relaxed">
-                      Every spice is cleaned and processed with care to retain its natural oils and aroma.
+                      {contentMap.quality_step2_desc || 'Every spice is cleaned and processed with care to retain its natural oils and aroma.'}
                     </p>
                   </div>
 
@@ -409,10 +351,10 @@ export default async function QualityPage() {
                       <ShieldCheck className="h-5 w-5 text-gold" />
                     </div>
                     <h3 className="mt-3 font-heading text-xs font-bold uppercase tracking-wider text-maroon">
-                      Quality Checked
+                      {contentMap.quality_step3_title || 'Quality Checked'}
                     </h3>
                     <p className="mt-1.5 max-w-[180px] text-[11px] text-muted leading-relaxed">
-                      Strict quality checks are done at every step to ensure purity and consistency.
+                      {contentMap.quality_step3_desc || 'Strict quality checks are done at every step to ensure purity and consistency.'}
                     </p>
                   </div>
 
@@ -422,10 +364,10 @@ export default async function QualityPage() {
                       <Package className="h-5 w-5 text-gold" />
                     </div>
                     <h3 className="mt-3 font-heading text-xs font-bold uppercase tracking-wider text-maroon">
-                      Packed with Care
+                      {contentMap.quality_step4_title || 'Packed with Care'}
                     </h3>
                     <p className="mt-1.5 max-w-[180px] text-[11px] text-muted leading-relaxed">
-                      Hygienically packed to lock in freshness, flavour and goodness.
+                      {contentMap.quality_step4_desc || 'Hygienically packed to lock in freshness, flavour and goodness.'}
                     </p>
                   </div>
                 </div>
@@ -438,13 +380,15 @@ export default async function QualityPage() {
       {/* SECTION 4: MORE THAN A SPICE */}
       <section className="bg-cream/60 px-6 py-8 sm:px-10 lg:py-12">
         <div className="mx-auto max-w-6xl text-center">
-          <SectionLabel className="justify-center">MORE THAN A SPICE.</SectionLabel>
+          <SectionLabel className="justify-center">
+            {contentMap.quality_promise_label || 'MORE THAN A SPICE.'}
+          </SectionLabel>
           <h2 className="mt-1.5 font-heading text-2xl font-bold text-maroon sm:text-3xl">
-            It&apos;s Our Promise.
+            {contentMap.quality_promise_title || "It's Our Promise."}
           </h2>
 
           <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-3">
-            {PROMISES.map((promise) => (
+            {promises.map((promise) => (
               <div
                 key={promise.title}
                 className="relative rounded-2xl border border-border-gold/60 bg-white p-5 pt-8 text-center shadow-sm transition-all duration-300 hover:border-gold hover:shadow-md"
@@ -469,9 +413,11 @@ export default async function QualityPage() {
       {/* SECTION 5: CERTIFICATIONS & TRUST */}
       <section className="bg-white px-6 py-6 sm:px-10 lg:py-10 border-t border-b border-border-gold/40">
         <div className="mx-auto max-w-4xl text-center">
-          <SectionLabel className="justify-center">CERTIFICATIONS & TRUST</SectionLabel>
+          <SectionLabel className="justify-center">
+            {contentMap.quality_cert_label || 'CERTIFICATIONS & TRUST'}
+          </SectionLabel>
           <h2 className="mt-1.5 font-heading text-2xl font-bold text-maroon sm:text-3xl">
-            Certified. Verified. Trusted.
+            {contentMap.quality_cert_title || 'Certified. Verified. Trusted.'}
           </h2>
 
           {activeCerts.length > 0 ? (
@@ -520,10 +466,10 @@ export default async function QualityPage() {
             {/* Right Text & Action Buttons */}
             <div className="lg:col-span-8">
               <h2 className="font-heading text-xl font-bold text-white sm:text-2xl lg:text-3xl">
-                Quality That Belongs in Every Kitchen
+                {contentMap.quality_cta_title || 'Quality That Belongs in Every Kitchen'}
               </h2>
               <p className="mt-2 font-body text-xs text-cream/90 sm:text-sm leading-relaxed">
-                Explore the Kura Gold range and discover spices made for everyday Indian cooking.
+                {contentMap.quality_cta_subtitle || 'Explore the Kura Gold range and discover spices made for everyday Indian cooking.'}
               </p>
 
               <div className="mt-4 flex flex-wrap items-center gap-3">
@@ -551,5 +497,3 @@ export default async function QualityPage() {
     </main>
   )
 }
-
-

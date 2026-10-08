@@ -3,19 +3,22 @@ import { LinkButton } from '@/components/ui/Button'
 import { SectionLabel } from '@/components/ui/SectionLabel'
 import type { Product } from '@/types'
 
-export function BestSellers({ products }: { products: Product[] }) {
+export function BestSellers({ products, contentMap = {} }: { products: Product[]; contentMap?: Record<string, string> }) {
   const displayProducts = products.length > 0 ? products : []
+  const sectionLabel = contentMap.home_bestsellers_section_label || 'Best Sellers'
+  const title = contentMap.home_bestsellers_title || 'Loved by Kitchens Across India'
+  const subtitle = contentMap.home_bestsellers_subtitle || 'Our most popular pure ground spices, packed with authentic flavor and aroma.'
 
   return (
     <section className="bg-white px-6 py-12 sm:px-10 lg:py-16">
       <div className="mx-auto max-w-7xl">
         <div className="mb-10 text-center">
-          <SectionLabel className="justify-center">Best Sellers</SectionLabel>
+          <SectionLabel className="justify-center">{sectionLabel}</SectionLabel>
           <h2 className="font-heading text-3xl font-bold text-maroon sm:text-4xl">
-            Loved by Kitchens Across India
+            {title}
           </h2>
           <p className="mt-2 text-sm text-muted">
-            Our most popular pure ground spices, packed with authentic flavor and aroma.
+            {subtitle}
           </p>
         </div>
 

@@ -4,18 +4,29 @@ import { LinkButton } from '@/components/ui/Button'
 import { SectionLabel } from '@/components/ui/SectionLabel'
 import type { Blog } from '@/types'
 
-export function BlogSection({ blogs }: { blogs: Blog[] }) {
+export function BlogSection({ blogs, contentMap = {} }: { blogs: Blog[]; contentMap?: Record<string, string> }) {
+  const sectionLabel = contentMap.home_story_section_label || 'Our Story'
+  const title = contentMap.home_story_title || 'Crafted with Passion, Ground with Purity.'
+  const subtitle =
+    contentMap.home_story_subtitle ||
+    'Discover the tradition, purity, and passion behind every pack of Kura Gold Spices.'
+
+  const storyHeadline = contentMap.home_story_headline || 'Authentic Hyderabad Spices Delivered Fresh to Your Kitchen'
+  const storyBody =
+    contentMap.home_story_body ||
+    "At Kura Gold Spices (a brand of JK Enterprises), our journey began with a single promise: to deliver 100% pure, unadulterated spices straight from Hyderabad’s rich culinary heritage to your family's table. We cold-grind natural spice seeds in small batches to preserve essential oils, rich natural aroma, and authentic taste."
+
   return (
     <section className="bg-ivory px-6 py-12 sm:px-10 lg:py-16">
       <div className="mx-auto max-w-7xl">
         <div className="mb-10 text-center">
-          <SectionLabel className="justify-center">Our Story</SectionLabel>
+          <SectionLabel className="justify-center">{sectionLabel}</SectionLabel>
           <h2 className="font-heading text-3xl font-bold text-maroon sm:text-4xl">
-            {blogs.length === 0 ? 'Crafted with Passion, Ground with Purity.' : 'Stories, Tips & Cooking Inspiration'}
+            {blogs.length === 0 ? title : 'Stories, Tips & Cooking Inspiration'}
           </h2>
           <p className="mt-2 text-sm text-muted">
             {blogs.length === 0
-              ? 'Discover the tradition, purity, and passion behind every pack of Kura Gold Spices.'
+              ? subtitle
               : 'Explore articles on spice purity, authentic recipes, and kitchen tips.'}
           </p>
         </div>
@@ -39,10 +50,10 @@ export function BlogSection({ blogs }: { blogs: Blog[] }) {
               {/* Right Story Content */}
               <div className="p-8 sm:p-10 lg:col-span-7 flex flex-col justify-center gap-4">
                 <p className="font-heading text-xl sm:text-2xl font-bold text-maroon">
-                  Authentic Hyderabad Spices Delivered Fresh to Your Kitchen
+                  {storyHeadline}
                 </p>
                 <p className="text-xs sm:text-sm text-muted leading-relaxed">
-                  At Kura Gold Spices (a brand of JK Enterprises), our journey began with a single promise: to deliver 100% pure, unadulterated spices straight from Hyderabad’s rich culinary heritage to your family's table. We cold-grind natural spice seeds in small batches to preserve essential oils, rich natural aroma, and authentic taste.
+                  {storyBody}
                 </p>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2 border-t border-border-gold/30 mt-2">

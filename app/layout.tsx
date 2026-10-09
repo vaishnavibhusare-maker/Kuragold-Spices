@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Script from 'next/script'
 import { Cormorant_Garamond, Lato, Playfair_Display } from 'next/font/google'
 import { CONTACT_WA, SITE_NAME, TAGLINE } from '@/lib/constants'
 import '@/styles/globals.css'
@@ -55,6 +56,21 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${playfair.variable} ${lato.variable} ${cormorant.variable}`}>
+      <head>
+        {/* Google Tag (gtag.js) */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-1PXWJ237DB"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-1PXWJ237DB');
+          `}
+        </Script>
+      </head>
       <body className="min-h-screen bg-ivory font-body text-ink antialiased">{children}</body>
     </html>
   )
